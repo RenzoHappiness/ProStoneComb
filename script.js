@@ -1,4 +1,3 @@
-// --- LANGUAGE CONFIG ---
 const i18n = {
     de: {
         title: "💎 Prostone Master",
@@ -25,7 +24,6 @@ const i18n = {
         lbl_glue: "Leime",
         lbl_dia: "Dias",
         unit_eng: "Energie",
-        // --- NEUE ÜBERSETZUNGEN ---
         lbl_limit_glue: "Max. Leime (Leer = Egal)",
         lbl_prio_mat: "📦 Steine sparen",
         lbl_prio_glue: "🧪 Leime sparen",
@@ -57,7 +55,6 @@ const i18n = {
         lbl_glue: "Glues",
         lbl_dia: "Dias",
         unit_eng: "Energy",
-        // --- NEW TRANSLATIONS ---
         lbl_limit_glue: "Max Glues (Empty = Any)",
         lbl_prio_mat: "📦 Save Stones",
         lbl_prio_glue: "🧪 Save Glues",
@@ -89,7 +86,6 @@ const i18n = {
         lbl_glue: "Colles",
         lbl_dia: "Dias",
         unit_eng: "Énergie",
-        // --- NOUVELLES TRADUCTIONS ---
         lbl_limit_glue: "Max Colles (Vide = Tout)",
         lbl_prio_mat: "📦 Éco. Pierres",
         lbl_prio_glue: "🧪 Éco. Colles",
@@ -104,7 +100,6 @@ function changeLanguage() {
     curLang = document.getElementById('langSelect').value;
     const txt = i18n[curLang];
 
-    // Standard IDs
     document.getElementById('lbl_title').innerText = txt.title;
     document.getElementById('lbl_base_values').innerText = txt.base_values;
     document.getElementById('lbl_base_eng').innerText = txt.base_eng;
@@ -113,23 +108,17 @@ function changeLanguage() {
     document.getElementById('lbl_target_eng').innerText = txt.target_eng;
     document.getElementById('lbl_mode').innerText = txt.mode;
     document.getElementById('btn_calc').innerText = txt.btn_calc;
-
-    // --- HIER WURDE DER FEHLENDE TEIL EINGEFÜGT ---
     document.getElementById('lbl_limit_glue').innerText = txt.lbl_limit_glue;
     document.getElementById('lbl_prio_mat').innerText = txt.lbl_prio_mat;
     document.getElementById('lbl_prio_glue').innerText = txt.lbl_prio_glue;
     
-    // Slider Text auch sofort updaten
     updateSliderLabel();
-    
-    // Neu berechnen, damit auch Ergebnisse übersetzt werden
     calculateOptimize();
 }
 
 function updateSliderLabel() {
     const val = document.getElementById('prioSlider').value;
     const txt = i18n[curLang];
-    // Formatiert den Text unter dem Slider (z.B. Balance: 50% Material / 50% Cost)
     document.getElementById('lbl_slider_desc').innerText = `${txt.slider_bal}: ${100-val}% Material / ${val}% Cost`;
 }
 
@@ -168,7 +157,7 @@ function simulateFusion(inputEnergy, inputValue, count, isPremium) {
 }
 
 function calculateOptimize() {
-    updateSliderLabel(); // Text unter Slider aktuell halten
+    updateSliderLabel();
     
     const baseEng = parseInt(document.getElementById('baseEnergy').value);
     const baseVal = parseFloat(document.getElementById('baseValue').value);
@@ -231,29 +220,37 @@ function calculateOptimize() {
     let validResults = results.filter(r => r.totalLeime <= maxGlues);
 
     if (validResults.length === 0) {
+        // Falls nichts gefunden, UI Error anzeigen
         renderError(i18n[curLang].err_limit);
         return;
     }
 
     // 3. Score Berechnung basierend auf Slider
+    // Wir müssen die Werte normalisieren, da Steine (z.B. 1000) und Leime (z.B. 50) unterschiedliche Skalen haben.
+    
+    // Finde Min/Max Werte im aktuellen Set
     let minStones = Math.min(...validResults.map(r => r.totalStones));
     let minLeime = Math.min(...validResults.map(r => r.totalLeime));
+    // Vermeide Division durch Null
     if(minLeime === 0) minLeime = 1; 
 
     validResults.forEach(r => {
-        // Normalisierung: Wie weit weg vom Bestwert?
+        // Wie viel schlechter ist dieser Wert als das theoretische Optimum?
+        // 1.0 = Bester Wert, 2.0 = Doppelt so teuer
         let stoneScore = r.totalStones / minStones;
         let glueScore = (r.totalLeime === 0) ? 1 : (r.totalLeime / minLeime);
 
-        // Slider Gewichtung
+        // Gewichtung anwenden
+        // Slider 0 -> 100% Stone Prio
+        // Slider 100 -> 100% Glue Prio
         let weightGlue = sliderVal / 100;
         let weightStone = 1 - weightGlue;
 
-        // Final Score
+        // Finaler Score (Niedriger ist besser)
         r.finalScore = (stoneScore * weightStone) + (glueScore * weightGlue);
     });
 
-    // Sortieren nach Score
+    // Sortieren nach Score (Niedrigster Score gewinnt)
     validResults.sort((a, b) => a.finalScore - b.finalScore);
 
     renderResults(validResults, isPremium);
@@ -311,6 +308,7 @@ function renderResults(results, isPremium) {
 
     html += `</ul></div>`;
 
+    // Vergleichstabelle
     html += `<div class="card"><h3>${txt.table_strat} (Vergleich)</h3>
              <table>
                 <tr>
@@ -321,6 +319,7 @@ function renderResults(results, isPremium) {
                 </tr>`;
     
     results.forEach(r => {
+        // Highlight für den Gewinner
         let style = (r === best) ? "background:rgba(3, 218, 198, 0.1); font-weight:bold;" : "";
         
         html += `<tr style="${style}">
@@ -335,7 +334,6 @@ function renderResults(results, isPremium) {
     container.innerHTML = html;
 }
 
-// Init beim Laden
 window.onload = function() {
     changeLanguage(); 
 }
