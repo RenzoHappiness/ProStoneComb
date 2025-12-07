@@ -34,10 +34,12 @@
 
         <div class="card">
             <h3 id="lbl_target">2. Ziel & Einstellungen</h3>
+            
             <div class="input-group">
                 <label id="lbl_target_eng">Gewünschte Ziel-Energie</label>
                 <input type="number" id="targetEnergy" value="1000">
             </div>
+
             <div class="grid-2-inner">
                 <div class="input-group">
                     <label id="lbl_mode">Methode</label>
@@ -47,13 +49,20 @@
                     </select>
                 </div>
                 <div class="input-group">
-                    <label id="lbl_sort">Sortierung</label>
-                    <select id="sortType" onchange="calculateOptimize()">
-                        <option value="stones">📦 Material (Steine)</option>
-                        <option value="cost">🧪 Kosten (Leime)</option>
-                    </select>
+                    <label id="lbl_limit_glue">Max. verfügbare Leime (Optional)</label>
+                    <input type="number" id="maxGlues" placeholder="∞" oninput="calculateOptimize()">
                 </div>
             </div>
+
+            <div class="input-group" style="margin-top: 15px;">
+                <label style="display:flex; justify-content:space-between;">
+                    <span id="lbl_prio_mat">📦 Material sparen</span>
+                    <span id="lbl_prio_glue">🧪 Leime sparen</span>
+                </label>
+                <input type="range" id="prioSlider" min="0" max="100" value="50" class="slider" oninput="calculateOptimize()">
+                <div style="text-align:center; font-size:0.8em; color:#888;" id="lbl_slider_desc">Balance: 50/50</div>
+            </div>
+
         </div>
     </div>
 
