@@ -56,7 +56,7 @@ Clone the repository:
 
 Bash
 
-git clone https://github.com/YOUR-USERNAME/prostone-optimizer.git
+git clone https://github.com/RenzoHappiness/prostone-optimizer.git
 Open index.html in any modern web browser.
 
 Or use the live version via GitHub Pages (link above).
