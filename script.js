@@ -1,4 +1,3 @@
-// --- LANGUAGE CONFIG ---
 const i18n = {
     de: {
         title: "💎 Prostone Master",
@@ -8,13 +7,12 @@ const i18n = {
         target: "2. Ziel & Einstellungen",
         target_eng: "Gewünschte Ziel-Energie",
         mode: "Methode",
-        sort: "Sortierung",
         btn_calc: "🚀 Berechnen",
-        res_best: "🏆 Beste Strategie: Immer",
+        res_best: "🏆 Beste Strategie für deine Einstellung:",
         res_stones_needed: "Benötigte Steine",
         res_total_cost: "Gesamtkosten",
         res_final_stats: "Endwerte",
-        res_step_by_step: "Schritt-für-Schritt",
+        res_step_by_step: "Anleitung",
         step: "Schritt",
         take: "Nimm",
         fuse_to: "Fusioniere zu",
@@ -23,11 +21,14 @@ const i18n = {
         table_cost: "Kosten",
         table_res: "End-Energie",
         suffix_stones: "er Stacks",
-        opt_mat: "📦 Material (Steine)",
-        opt_cost: "🧪 Kosten (Leime)",
         lbl_glue: "Leime",
         lbl_dia: "Dias",
-        unit_eng: "Energie" // <-- NEU
+        unit_eng: "Energie",
+        lbl_limit_glue: "Max. Leime (Leer = Egal)",
+        lbl_prio_mat: "🪙 Steine sparen",
+        lbl_prio_glue: "🧪 Leime sparen",
+        slider_bal: "Balance",
+        err_limit: "⚠️ Kein Ergebnis gefunden unter dem Leim-Limit!"
     },
     en: {
         title: "💎 Prostone Master",
@@ -37,13 +38,12 @@ const i18n = {
         target: "2. Target & Settings",
         target_eng: "Target Energy",
         mode: "Method",
-        sort: "Sorting",
         btn_calc: "🚀 Calculate",
-        res_best: "🏆 Best Strategy: Always",
+        res_best: "🏆 Best Strategy for your settings:",
         res_stones_needed: "Stones Needed",
         res_total_cost: "Total Cost",
         res_final_stats: "Final Stats",
-        res_step_by_step: "Step-by-Step",
+        res_step_by_step: "Guide",
         step: "Step",
         take: "Take",
         fuse_to: "Fuse to",
@@ -52,11 +52,14 @@ const i18n = {
         table_cost: "Cost",
         table_res: "End Energy",
         suffix_stones: " stacks",
-        opt_mat: "📦 Material (Stones)",
-        opt_cost: "🧪 Cost (Glues)",
         lbl_glue: "Glues",
         lbl_dia: "Dias",
-        unit_eng: "Energy" // <-- NEU
+        unit_eng: "Energy",
+        lbl_limit_glue: "Max Glues (Empty = Any)",
+        lbl_prio_mat: "📦 Save Stones",
+        lbl_prio_glue: "🧪 Save Glues",
+        slider_bal: "Balance",
+        err_limit: "⚠️ No strategy found within Glue limit!"
     },
     fr: {
         title: "💎 Maître Prostone",
@@ -66,13 +69,12 @@ const i18n = {
         target: "2. Cible & Réglages",
         target_eng: "Énergie Cible",
         mode: "Méthode",
-        sort: "Tri",
         btn_calc: "🚀 Calculer",
-        res_best: "🏆 Meilleure Stratégie: Toujours",
+        res_best: "🏆 Meilleure Stratégie:",
         res_stones_needed: "Pierres Requises",
         res_total_cost: "Coût Total",
         res_final_stats: "Stats Finales",
-        res_step_by_step: "Guide Étape",
+        res_step_by_step: "Guide",
         step: "Étape",
         take: "Prendre",
         fuse_to: "Fusionner vers",
@@ -81,11 +83,14 @@ const i18n = {
         table_cost: "Coût",
         table_res: "Énergie Fin",
         suffix_stones: " piles",
-        opt_mat: "📦 Matériel (Pierres)",
-        opt_cost: "🧪 Coût (Colles)",
         lbl_glue: "Colles",
         lbl_dia: "Dias",
-        unit_eng: "Énergie" // <-- NEU
+        unit_eng: "Énergie",
+        lbl_limit_glue: "Max Colles (Vide = Tout)",
+        lbl_prio_mat: "📦 Éco. Pierres",
+        lbl_prio_glue: "🧪 Éco. Colles",
+        slider_bal: "Balance",
+        err_limit: "⚠️ Aucun résultat sous la limite de colle !"
     }
 };
 
@@ -95,7 +100,6 @@ function changeLanguage() {
     curLang = document.getElementById('langSelect').value;
     const txt = i18n[curLang];
 
-    // IDs mappen
     document.getElementById('lbl_title').innerText = txt.title;
     document.getElementById('lbl_base_values').innerText = txt.base_values;
     document.getElementById('lbl_base_eng').innerText = txt.base_eng;
@@ -103,15 +107,19 @@ function changeLanguage() {
     document.getElementById('lbl_target').innerText = txt.target;
     document.getElementById('lbl_target_eng').innerText = txt.target_eng;
     document.getElementById('lbl_mode').innerText = txt.mode;
-    document.getElementById('lbl_sort').innerText = txt.sort;
     document.getElementById('btn_calc').innerText = txt.btn_calc;
+    document.getElementById('lbl_limit_glue').innerText = txt.lbl_limit_glue;
+    document.getElementById('lbl_prio_mat').innerText = txt.lbl_prio_mat;
+    document.getElementById('lbl_prio_glue').innerText = txt.lbl_prio_glue;
     
-    // Dropdown Options aktualisieren
-    const sortSelect = document.getElementById('sortType');
-    sortSelect.options[0].text = txt.opt_mat;
-    sortSelect.options[1].text = txt.opt_cost;
-
+    updateSliderLabel();
     calculateOptimize();
+}
+
+function updateSliderLabel() {
+    const val = document.getElementById('prioSlider').value;
+    const txt = i18n[curLang];
+    document.getElementById('lbl_slider_desc').innerText = `${txt.slider_bal}: ${100-val}% Material / ${val}% Cost`;
 }
 
 // --- LOGIC ---
@@ -133,18 +141,10 @@ function simulateFusion(inputEnergy, inputValue, count, isPremium) {
     const rateVal = RATES[typeKey].val[count];
     const rateEng = RATES[typeKey].eng[count];
 
-    // --- KOSTEN LOGIK ---
-    // Premium: 1 Leim pro Fusionsvorgang? Nein:
-    // User Info: "Anstatt 10 Diamanten bei 2 Prostones, zahlt man einen Leim."
-    // 2 Steine = 1 Leim. 3 Steine = 2 Leime ... 10 Steine = 9 Leime.
-    // Formel: count - 1
-    
     const costLeime = isPremium ? (count - 1) : 0;
     const costDias = costLeime * 10;
 
     const resultEnergy = Math.floor(inputEnergy * rateEng);
-    
-    // 1 Decimal Cutoff
     let rawVal = inputValue * rateVal;
     const resultValue = Math.floor(rawVal * 10) / 10;
 
@@ -157,35 +157,37 @@ function simulateFusion(inputEnergy, inputValue, count, isPremium) {
 }
 
 function calculateOptimize() {
+    updateSliderLabel();
+    
     const baseEng = parseInt(document.getElementById('baseEnergy').value);
     const baseVal = parseFloat(document.getElementById('baseValue').value);
     const target = parseInt(document.getElementById('targetEnergy').value);
     const isPremium = document.getElementById('fusionType').value === "1";
-    const sortMode = document.getElementById('sortType').value; 
+    
+    // Inputs holen
+    const sliderVal = parseInt(document.getElementById('prioSlider').value); // 0 (Steine) bis 100 (Leime)
+    const maxGluesInput = document.getElementById('maxGlues').value;
+    const maxGlues = maxGluesInput === "" ? Infinity : parseInt(maxGluesInput);
 
     const strategies = [2, 3, 4, 5, 6, 7, 8, 9, 10]; 
     let results = [];
 
+    // 1. Alle Möglichkeiten berechnen
     strategies.forEach(stackSize => {
         let currentEng = baseEng;
         let currentVal = baseVal;
         let totalBaseStones = 1;
-        
         let totalDiamonds = 0;
         let totalLeime = 0;
-        
         let steps = [];
         let iterations = 0;
 
         while(currentEng < target && iterations < 25) {
             iterations++;
-            
             let fusionResult = simulateFusion(currentEng, currentVal, stackSize, isPremium);
             
-            // Rekursive Kostenberechnung für Baumstruktur
             totalDiamonds = (totalDiamonds * stackSize) + fusionResult.costDias;
             totalLeime = (totalLeime * stackSize) + fusionResult.costLeime;
-            
             totalBaseStones = totalBaseStones * stackSize;
 
             steps.push({
@@ -205,8 +207,8 @@ function calculateOptimize() {
             results.push({
                 strategy: stackSize,
                 totalStones: totalBaseStones,
-                totalDiamonds: totalDiamonds,
                 totalLeime: totalLeime,
+                totalDiamonds: totalDiamonds,
                 finalEng: currentEng,
                 finalVal: currentVal,
                 steps: steps
@@ -214,32 +216,55 @@ function calculateOptimize() {
         }
     });
 
-    renderResults(results, isPremium, sortMode);
-}
+    // 2. Filtern nach Hard Limit (Max Glues)
+    let validResults = results.filter(r => r.totalLeime <= maxGlues);
 
-function renderResults(results, isPremium, sortMode) {
-    const container = document.getElementById('resultsArea');
-    const txt = i18n[curLang];
-    container.innerHTML = "";
-
-    if(results.length === 0) {
-        container.innerHTML = `<div class='card'><h3>❌ Ziel nicht erreichbar (Limit: 25 Stufen)</h3></div>`;
+    if (validResults.length === 0) {
+        // Falls nichts gefunden, UI Error anzeigen
+        renderError(i18n[curLang].err_limit);
         return;
     }
 
-    // --- SORTIERUNG ---
-    if(sortMode === 'cost') {
-        results.sort((a, b) => {
-            if(a.totalLeime === b.totalLeime) return a.totalStones - b.totalStones;
-            return a.totalLeime - b.totalLeime;
-        });
-    } else {
-        results.sort((a, b) => a.totalStones - b.totalStones);
-    }
+    // 3. Score Berechnung basierend auf Slider
+    // Wir müssen die Werte normalisieren, da Steine (z.B. 1000) und Leime (z.B. 50) unterschiedliche Skalen haben.
     
+    // Finde Min/Max Werte im aktuellen Set
+    let minStones = Math.min(...validResults.map(r => r.totalStones));
+    let minLeime = Math.min(...validResults.map(r => r.totalLeime));
+    // Vermeide Division durch Null
+    if(minLeime === 0) minLeime = 1; 
+
+    validResults.forEach(r => {
+        // Wie viel schlechter ist dieser Wert als das theoretische Optimum?
+        // 1.0 = Bester Wert, 2.0 = Doppelt so teuer
+        let stoneScore = r.totalStones / minStones;
+        let glueScore = (r.totalLeime === 0) ? 1 : (r.totalLeime / minLeime);
+
+        // Gewichtung anwenden
+        // Slider 0 -> 100% Stone Prio
+        // Slider 100 -> 100% Glue Prio
+        let weightGlue = sliderVal / 100;
+        let weightStone = 1 - weightGlue;
+
+        // Finaler Score (Niedriger ist besser)
+        r.finalScore = (stoneScore * weightStone) + (glueScore * weightGlue);
+    });
+
+    // Sortieren nach Score (Niedrigster Score gewinnt)
+    validResults.sort((a, b) => a.finalScore - b.finalScore);
+
+    renderResults(validResults, isPremium);
+}
+
+function renderError(msg) {
+    document.getElementById('resultsArea').innerHTML = `<div class='card' style='border-left:4px solid #cf6679'><h3>${msg}</h3></div>`;
+}
+
+function renderResults(results, isPremium) {
+    const container = document.getElementById('resultsArea');
+    const txt = i18n[curLang];
     const best = results[0];
 
-    // HTML Generierung
     let html = `
         <div class="card result-best">
             <h2>${txt.res_best} ${best.strategy} ${txt.suffix_stones}</h2>
@@ -294,7 +319,10 @@ function renderResults(results, isPremium, sortMode) {
                 </tr>`;
     
     results.forEach(r => {
-        html += `<tr>
+        // Highlight für den Gewinner
+        let style = (r === best) ? "background:rgba(3, 218, 198, 0.1); font-weight:bold;" : "";
+        
+        html += `<tr style="${style}">
                     <td>${r.strategy} ${txt.suffix_stones}</td>
                     <td>${r.totalStones.toLocaleString()}</td>
                     <td class="cost-glue">${r.totalLeime.toLocaleString()}</td>
@@ -303,11 +331,9 @@ function renderResults(results, isPremium, sortMode) {
     });
     
     html += `</table></div>`;
-
     container.innerHTML = html;
 }
 
-// Init beim Laden
 window.onload = function() {
-    changeLanguage(); // Setzt Text und startet erste Berechnung
+    changeLanguage(); 
 }
